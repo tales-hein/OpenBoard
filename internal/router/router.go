@@ -1,7 +1,7 @@
 package router
 
 import (
-	"myapp/internal/handler"
+	"openboard/internal/handler"
 
 	"github.com/gorilla/mux"
 )

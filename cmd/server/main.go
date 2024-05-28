@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"myapp/internal/config"
-	"myapp/internal/router"
 	"net/http"
+	"openboard/internal/config"
+	"openboard/internal/router"
 )
 
 func main() {
