@@ -1,4 +1,4 @@
-# OpenBoard
+# OpenBoard  🧗
 
 **Este projeto, chamado de OpenBoard, é fruto do desejo de construir uma interface de treino e uma parede de escalada pessoais.**
 
