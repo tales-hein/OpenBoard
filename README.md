@@ -12,7 +12,7 @@ A ideia é executar com preço baixo, tornando o projeto mais acessível possív
 
 ## Checklist de objetivos:
 
-- [x] Desenvolvimento do site de criação e consulta de rotas.
+- [x] Desenvolvimento do site de criação e consulta de rotas. (em progresso)
 - [x] Deploy de um servidor back end para banco de dados e site.
 - [x] Desenvolvimento do código do microcontrolador seletor de rotas.
 - [x] Documentação do projeto (marcenaria e eletrônica) e análise final de custos.
