@@ -89,7 +89,7 @@ def get_route(id):
         route = session.get(Route, id)
         route = route.to_dict()
         if route:
-            return jsonify(route.to_dict())
+            return jsonify(route)
         else:
             return jsonify({'message': 'Erro tentando buscar dados de rota.'}), 404
     finally:
