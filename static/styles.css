@@ -1,0 +1,212 @@
+body {
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    justify-content: flex-start;
+    overflow: auto;
+}
+#display-container {
+    view-transition-name: display-container;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 25vh;
+    padding-bottom: 100px;
+}
+
+h2 {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.button-md {
+    width: 400px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: #F5F5F5;
+    color: black;
+    border: 2px solid #202020;
+    margin: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 5px 5px #505050;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.button-md:hover {
+    border: 3px solid #202020;
+    box-shadow: 5px 5px #202020;
+}
+
+.button-route-ref {
+    width: 500px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 10px 10px;
+    background-color: #F5F5F5;
+    color: black;
+    border: 2px solid #202020;
+    margin: 10px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 5px 5px #505050;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.button-route-ref:hover {
+    border: 3px solid #202020;
+    box-shadow: 5px 5px #202020;
+}
+
+footer {
+    width: 100%;
+    height: 70px;
+    background-color: #202020;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+}
+
+.github-icon {
+    fill: #D8D8D8;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+.github-icon:hover {
+    fill: #fff;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+}
+
+@keyframes fade-out {
+    to { opacity: 0; }
+}
+
+@keyframes slide-from-right {
+    from { transform: translateX(90px); }
+}
+
+@keyframes slide-to-left {
+    to { transform: translateX(-90px); }
+}
+
+::view-transition-old(display-container) {
+    animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+    600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+}
+::view-transition-new(display-container) {
+    animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+    600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    width: 100%;
+}
+.button-container button {
+    flex-grow: 1;
+}
+
+.custom-checkbox {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 3px;
+    background-color: #F5F5F5;
+    color: black;
+    border: 2px solid #202020;
+    margin: 5px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 3px 3px #505050;
+    font-size: 20px;
+    font-weight: bold;
+    position: relative;
+}
+.custom-checkbox:hover {
+    border: 2px solid #202020;
+    box-shadow: 3px 3px #202020;
+}
+
+.custom-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 120%;
+    height: 120%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.custom-checkbox.checked::after {
+    content: '⨯';
+    color: black;
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 2px;
+    left: 5px;
+}
+
+.side-button-container {
+    position: fixed;
+    top: 200px;
+    left: 400px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 999;
+}
+.side-button {
+    width: 150px;
+    height: 50px;
+    background-color: #F5F5F5;
+    color: black;
+    border: 2px solid #202020;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 3px 3px #505050;
+    font-size: 14px;
+    font-weight: bold;
+}
+.side-button:hover {
+    border: 3px solid #202020;
+    box-shadow: 3px 3px #202020;
+}
+
+#repo-selection-form{
+    height: 200%;
+}
