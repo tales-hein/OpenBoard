@@ -10,13 +10,31 @@
     margin-top: 5vh;
 }
 </style>
-<h2>Crie uma rota</h2>
+<h2>Crie uma rota:</h2>
 <br>
 <br>
 <form id="ropute-selection-form" hx-post="/api/v1/route/create-selection">
-
+    <div id="plane">
+    </div>
 </form>
 <div class="side-button-container">
     <button class="side-button" hx-get="/home" hx-swap="innerHTML transition:true" hx-target="#display-container"><span style="font-size: 20px;">&#8630;</span> Voltar</button>
     <button class="side-button" type="submit" form="create-form"><span style="font-size: 20px;">&#8628;</span> Salvar</button>
 </div>
+<script>
+    function createDotMatrix(rows, columns, spacing) {
+    const plane = document.getElementById('plane');
+    const offsetX = 50;
+    const offsetY = 50;
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < columns; col++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.left = `${offsetX + col * spacing}px`;
+            dot.style.top = `${offsetY + row * spacing}px`;
+            plane.appendChild(dot);
+        }
+        }
+    }
+    createDotMatrix(18, 11, 50);
+</script>

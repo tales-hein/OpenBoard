@@ -236,3 +236,28 @@ footer {
 #repo-selection-form{
     height: 200%;
 }
+
+#plane {
+    position: relative;
+    background-color: #F5F5F5;
+    border: 3px solid #202020;
+    box-shadow: 8px 8px #505050;
+    width: 600px;
+    height: 950px;
+}
+
+.dot {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #202020;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.dot:hover {
+    background-color: rgb(212, 16, 16);
+    width: 17px;
+    height: 17px;
+}
