@@ -112,7 +112,7 @@ def create_route():
         return jsonify(new_route.to_dict()), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({'message': 'Erro ao salvar nova rota.'}), 404
+        return jsonify({'message': 'Erro ao salvar nova rota.', 'error': str(e)}), 404
 
 @app.route('/api/v1/route/<int:id>', methods=['PUT'])
 def update_route(id):
