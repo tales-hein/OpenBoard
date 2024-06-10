@@ -9,32 +9,88 @@
     max-width: 600px;
     margin-top: 5vh;
 }
+.side-button-container {
+    position: fixed;
+    top: 200px;
+    left: 430px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 999;
+}
 </style>
 <h2>Crie uma rota:</h2>
 <br>
 <br>
-<form id="ropute-selection-form" hx-post="/api/v1/route/create-selection">
+<form id="create-form" style="padding-bottom: 100px;" hx-post="/api/v1/route" hx-swap="innerHTML transition:true" hx-target="#display-container">
     <div id="plane">
+    </div>
+    <div class="side-button-container-right">
+        <div class="custom-text-input-container">
+            <input type="text" name="name" class="side-input-box" placeholder="Nome da rota">
+        </div>
+        <div class="custom-text-input-container">
+            <input type="text" name="grade" class="side-input-box" placeholder="Grau">
+        </div>
+        <div class="custom-text-input-container">
+            <input type="text" name="author" class="side-input-box" placeholder="Nome do autor (opcional)">
+        </div>
+        <div class="custom-text-input-container">
+            <input type="text" name="description" class="side-input-box" placeholder="Descrição">
+        </div>
+        <input type="hidden" name="holds" id="holds-input">
     </div>
 </form>
 <div class="side-button-container">
     <button class="side-button" hx-get="/home" hx-swap="innerHTML transition:true" hx-target="#display-container"><span style="font-size: 20px;">&#8630;</span> Voltar</button>
     <button class="side-button" type="submit" form="create-form"><span style="font-size: 20px;">&#8628;</span> Salvar</button>
 </div>
+
 <script>
-    function createDotMatrix(rows, columns, spacing) {
-    const plane = document.getElementById('plane');
-    const offsetX = 50;
-    const offsetY = 50;
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < columns; col++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            dot.style.left = `${offsetX + col * spacing}px`;
-            dot.style.top = `${offsetY + row * spacing}px`;
-            plane.appendChild(dot);
+    function extractId(str) {
+        const match = str.match(/(true|false)-(\d+)$/);
+        if (match) {
+            return match[2];
         }
+        return null;
+    }
+    function createDotMatrix(rows, columns, spacing) {
+        let holds = [];
+        const plane = document.getElementById('plane');
+        const offsetX = 50;
+        const offsetY = 50;
+        let i = 0;
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < columns; col++) {
+                const dot = document.createElement('div');
+                dot.setAttribute('id', `false-${i}`);
+                dot.className = 'dot';
+                dot.style.left = `${offsetX + col * spacing}px`;
+                dot.style.top = `${offsetY + row * spacing}px`;
+                plane.appendChild(dot);
+                dot.addEventListener('click', function(){
+                    if (this.id.startsWith('false-')) {
+                        this.classList.toggle('normal-hold');
+                        this.setAttribute('id', this.id.replace('false-', 'true-'));
+                        const idToSave = extractId(this.id);
+                        holds.push(idToSave);
+                    } else {
+                        if (this.classList.contains('normal-hold')) {
+                            this.classList.remove('normal-hold');
+                            this.classList.toggle('foot-hold');
+                        } else if (this.classList.contains('foot-hold')) {
+                            this.classList.remove('foot-hold');
+                            this.setAttribute('id', this.id.replace('true-', 'false-'));
+                            const idToRemove = extractId(this.id);
+                            holds = holds.filter(hold => hold !== idToRemove); 
+                        }
+                    }
+                    document.getElementById('holds-input').value = holds.join(',');
+                })
+                i++;
+            }
         }
     }
-    createDotMatrix(18, 11, 50);
+    createDotMatrix(16, 11, 45);
 </script>

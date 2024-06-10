@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 from dotenv import load_dotenv
 import os
-import base64
 
 load_dotenv()
 
@@ -28,25 +27,28 @@ class Route(db.Model):
     route_hold_definition = db.Column(db.BINARY(10), nullable=False)
 
     def to_dict(self):
-        def binary_to_bits(binary_data):
-            int_value = int.from_bytes(binary_data, byteorder='big')
-            binary_string = bin(int_value)[2:]
-            expected_length = len(binary_data) * 8
-            binary_string = binary_string.zfill(expected_length)
-            return binary_string
-
         return {
             'id': self.id,
             'name': self.name,
             'author': self.author,
             'description': self.description,
             'grade': self.grade,
-            'route_definition': binary_to_bits(self.route_definition),
-            'route_hold_definition': binary_to_bits(self.route_hold_definition),
+            'route_definition': decimal_to_binary(self.route_definition),
+            'route_hold_definition': decimal_to_binary(self.route_hold_definition),
         }
 
 def get_session():
     return scoped_session(sessionmaker(bind=db.engine))
+
+def decimal_to_binary(n):
+    return bin(n).replace("0b", "")
+
+def bit_to_byte_array(binary_string):
+    byte_array = bytearray()
+    for bit_position in range(0, len(binary_string), 8):
+        byte = int(binary_string[bit_position:bit_position+8], 2)
+        byte_array.append(byte)
+    return bytes(byte_array)
 
 @app.route('/')
 def index():
@@ -68,6 +70,10 @@ def repo():
 @app.route('/create')
 def create():
     return render_template('create.html')
+
+@app.route('/success')
+def success():
+    return render_template('success.html')
 
 @app.route('/api/v1/route/get-all', methods=['GET'])
 def get_all_routes():
@@ -97,21 +103,31 @@ def get_route(id):
 
 @app.route('/api/v1/route', methods=['POST'])
 def create_route():
-    data = request.get_json()
+    name = request.form.get('name')
+    author = request.form.get('author') if request.form.get('author') else "Anônimo"
+    description = request.form.get('description')
+    grade = request.form.get('grade')
+    holds = request.form.get('holds').split(',')
+
+    decimal_base_route_definition = (1 << 200) - 1
+    for hold in holds:
+        decimal_base_route_definition &= ~(1 << int(hold))
     try:
         new_route = Route(
-            name=data['name'],
-            author=data['author'],
-            description=data['description'],
-            grade=data['grade'],
-            route_definition=bytes.fromhex(data['route_definition']),
-            route_hold_definition=bytes.fromhex(data['route_hold_definition'])
+            name=name,
+            author=author,
+            description=description,
+            grade=grade,
+            route_definition=bit_to_byte_array(decimal_to_binary(decimal_base_route_definition)),
+            route_hold_definition=bytes(0),
         )
+        print(new_route.route_definition)
         db.session.add(new_route)
         db.session.commit()
-        return jsonify(new_route.to_dict()), 201
+        return success()
     except Exception as e:
         db.session.rollback()
+        print(e)
         return jsonify({'message': 'Erro ao salvar nova rota.', 'error': str(e)}), 404
 
 @app.route('/api/v1/route/<int:id>', methods=['PUT'])
