@@ -23,7 +23,7 @@
 <h2>Crie uma rota:</h2>
 <br>
 <br>
-<form id="create-form" style="padding-bottom: 100px;" hx-post="/api/v1/route" hx-swap="innerHTML transition:true" hx-target="#display-container">
+<form id="create-form" style="padding-bottom: 100px;" hx-post="/api/v1/route" hx-swap="innerHTML transition:true" hx-target="#resp-modal">
     <div id="plane">
     </div>
     <div class="side-button-container-right">
@@ -45,6 +45,8 @@
 <div class="side-button-container">
     <button class="side-button" hx-get="/home" hx-swap="innerHTML transition:true" hx-target="#display-container"><span style="font-size: 20px;">&#8630;</span> Voltar</button>
     <button class="side-button" type="submit" form="create-form"><span style="font-size: 20px;">&#8628;</span> Salvar</button>
+</div>
+<div id="resp-modal">
 </div>
 
 <script>

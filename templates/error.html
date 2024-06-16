@@ -1,0 +1,16 @@
+<div id="error-modal" class="modal">
+    <div class="modal-content">
+        <h2 id="error-message">Oh não! Houve um erro e o sua rota não foi gravada &#128565;</h2>
+        <p>Logo a página ficará disponível para outra tentativa</p>
+    </div>
+</div>
+<script>
+    function showModal() {
+        var modal = document.getElementById('error-modal');
+        modal.style.display = "block";
+        setTimeout(function() {
+            modal.style.display = "none";
+        }, 10000);
+    }
+    showModal();
+</script>

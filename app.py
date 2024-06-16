@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request
+from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
 from dotenv import load_dotenv
@@ -8,6 +9,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
+api_key = os.getenv('API_KEY')
 user = os.getenv('DATABASE_USER')
 password = os.getenv('DATABASE_PASSWORD')
 host = os.getenv('DATABASE_HOST')
@@ -36,6 +38,15 @@ class Route(db.Model):
             'route_definition': decimal_to_binary(self.route_definition),
             'route_hold_definition': decimal_to_binary(self.route_hold_definition),
         }
+    
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        api_key = request.headers.get('X-API-KEY')
+        if not api_key or api_key != api_key:
+            return jsonify({"message": "Acesso restrito: request com API key errada ou faltando."}), 403
+        return f(*args, **kwargs)
+    return decorated_function
 
 def get_session():
     return scoped_session(sessionmaker(bind=db.engine))
@@ -50,30 +61,34 @@ def bit_to_byte_array(binary_string):
         byte_array.append(byte)
     return bytes(byte_array)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
-@app.route('/home')
+@app.route('/home', methods=['GET'])
 def home():
     return render_template('home.html')
 
-@app.route('/footer')
+@app.route('/footer', methods=['GET'])
 def footer():
     return render_template('footer.html')
 
-@app.route('/repo')
+@app.route('/repo', methods=['GET'])
 def repo():
     routes = Route.query.all()
     return render_template('repo.html', routes=routes)
 
-@app.route('/create')
+@app.route('/create', methods=['GET'])
 def create():
     return render_template('create.html')
 
-@app.route('/success')
+@app.route('/success', methods=['GET'])
 def success():
     return render_template('success.html')
+
+@app.route('/error', methods=['GET'])
+def error():
+    return render_template('error.html')
 
 @app.route('/api/v1/route/get-all', methods=['GET'])
 def get_all_routes():
@@ -103,6 +118,7 @@ def get_route(id):
 
 @app.route('/api/v1/route', methods=['POST'])
 def create_route():
+    return error()
     name = request.form.get('name')
     author = request.form.get('author') if request.form.get('author') else "Anônimo"
     description = request.form.get('description')
@@ -121,16 +137,15 @@ def create_route():
             route_definition=bit_to_byte_array(decimal_to_binary(decimal_base_route_definition)),
             route_hold_definition=bytes(0),
         )
-        print(new_route.route_definition)
         db.session.add(new_route)
         db.session.commit()
         return success()
     except Exception as e:
         db.session.rollback()
-        print(e)
         return jsonify({'message': 'Erro ao salvar nova rota.', 'error': str(e)}), 404
 
 @app.route('/api/v1/route/<int:id>', methods=['PUT'])
+@require_api_key
 def update_route(id):
     data = request.get_json()
     session = get_session()
@@ -154,6 +169,7 @@ def update_route(id):
         session.remove()
 
 @app.route('/api/v1/route/<int:id>', methods=['DELETE'])
+@require_api_key
 def delete_route(id):
     session = get_session()
     try:
@@ -176,6 +192,7 @@ def create_selection():
     return jsonify(data)
 
 @app.route('/api/v1/route/retrieve-selection', methods=['GET'])
+@require_api_key
 def get_selection():
     data = {}
     return jsonify(data)

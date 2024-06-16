@@ -1,10 +1,19 @@
-<h2 id="success" hx-get="/create" hx-trigger="click" hx-swap="innerHTML transition:true" hx-target="#display-container">
-    Legal! A sua rota foi cadastrada com sucesso &#127881;
-</h2>
-<p>Logo a página ficará disponível para outro <br> cadastro, caso queira cadastrar outra rota</p>
-
+<div id="success-modal" class="modal">
+    <div class="modal-content">
+        <h2 id="success" hx-get="/create" hx-trigger="click" hx-swap="innerHTML transition:true" hx-target="#display-container">
+            Legal! A sua rota foi cadastrada com sucesso &#127881;
+        </h2>
+        <p>Logo a página ficará disponível para outro <br> cadastro, caso queira cadastrar outra rota</p>
+    </div>
+</div>
 <script>
-   setTimeout(function() {
-        document.getElementById('success').click();
-    }, 4000);
+    function showModal() {
+        var modal = document.getElementById('success-modal');
+        modal.style.display = "block";
+        setTimeout(function() {
+            modal.style.display = "none";
+            document.getElementById('success').click();
+        }, 4000);
+    }
+    showModal();
 </script>
