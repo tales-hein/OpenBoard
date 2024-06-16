@@ -118,7 +118,6 @@ def get_route(id):
 
 @app.route('/api/v1/route', methods=['POST'])
 def create_route():
-    return error()
     name = request.form.get('name')
     author = request.form.get('author') if request.form.get('author') else "Anônimo"
     description = request.form.get('description')
