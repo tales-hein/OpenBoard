@@ -1,4 +1,5 @@
-from flask import Flask, render_template, jsonify, request
+import random
+from flask import Flask, json, render_template, jsonify, request
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -19,6 +20,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+class RouteSelection(db.Model):
+    code      = db.Column(db.String(6), primary_key=True)
+    selection = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'selection': self.selection
+        }
+
 class Route(db.Model):
     id                    = db.Column(db.Integer, primary_key=True)
     name                  = db.Column(db.String(30), nullable=False)
@@ -29,16 +40,24 @@ class Route(db.Model):
     route_hold_definition = db.Column(db.BINARY(10), nullable=False)
 
     def to_dict(self):
+        route_definition_bits = self._get_bit_positions(self.route_definition)
         return {
             'id': self.id,
             'name': self.name,
             'author': self.author,
             'description': self.description,
             'grade': self.grade,
-            'route_definition': decimal_to_binary(self.route_definition),
-            'route_hold_definition': decimal_to_binary(self.route_hold_definition),
+            'route_definition': route_definition_bits,
         }
-    
+
+    def _get_bit_positions(self, binary_data):
+        bit_positions = []
+        bit_string = ''.join(f'{byte:08b}' for byte in binary_data)
+        for index, bit in enumerate(reversed(bit_string)):
+            if bit == '0':
+                bit_positions.append(index)
+        return bit_positions
+
 def require_api_key(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -53,6 +72,11 @@ def get_session():
 
 def decimal_to_binary(n):
     return bin(n).replace("0b", "")
+
+def generate_random_number():
+    digits = '0123456789'
+    random_number = ''.join(random.choice(digits) for _ in range(6))
+    return random_number
 
 def bit_to_byte_array(binary_string):
     byte_array = bytearray()
@@ -90,6 +114,11 @@ def success():
 def error():
     return render_template('error.html')
 
+@app.route('/show-route/<int:id>', methods=['GET'])
+def show_route(id):
+    route_data = get_route(id)
+    return render_template('route.html', route=route_data)
+
 @app.route('/api/v1/route/get-all', methods=['GET'])
 def get_all_routes():
     session = get_session()
@@ -108,9 +137,8 @@ def get_route(id):
     session = get_session()
     try:
         route = session.get(Route, id)
-        route = route.to_dict()
         if route:
-            return jsonify(route)
+            return route.to_dict()
         else:
             return jsonify({'message': 'Erro tentando buscar dados de rota.'}), 404
     finally:
@@ -187,8 +215,22 @@ def delete_route(id):
 
 @app.route('/api/v1/route/create-selection', methods=['POST'])
 def create_selection():
-    data = {}
-    return jsonify(data)
+    selected_routes = request.form.get('selected_routes')
+    if selected_routes: 
+        selected_routes = json.loads(selected_routes)
+        try:
+            new_selection = RouteSelection(
+                code=generate_random_number(),
+                selection=','.join(selected_routes)
+            )
+            db.session.add(new_selection)
+            db.session.commit()
+            return success()
+        except Exception as e:
+            db.session.rollback()
+            return error()
+    else:
+        return error()        
 
 @app.route('/api/v1/route/retrieve-selection', methods=['GET'])
 @require_api_key

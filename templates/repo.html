@@ -18,24 +18,34 @@
 <form id="repo-selection-form" hx-post="/api/v1/route/create-selection">
     {% for route in routes %}
     <div class="button-container">
-        <button class="button-route-ref" hx-get="/api/v1/route/{{ route.id }}" hx-swap="innerHTML transition:true" hx-target="closest div">
+        <button class="button-route-ref" hx-get="/show-route/{{ route.id }}" hx-swap="innerHTML transition:true" hx-target="#route-modal">
             &#8627; {{ route.grade }} &#11834; {{ route.name }}
         </button>
-        <div class="custom-checkbox" onclick="toggleCheckbox(this)">
-            <input type="checkbox" name="route-{{ route.id }}" class="select-checkbox" onclick="toggleCheckbox(event)">
+        <div class="custom-checkbox">
+            <input type="checkbox" class="select-checkbox" onclick="toggleCheckbox(event, '{{ route.id }}')">
         </div>
     </div>
     {% endfor %}
+    <input type="hidden" name="selected_routes" id="selected_routes">
 </form>
+<div id="route-modal">
+</div>
 <div class="side-button-container">
     <button class="side-button" hx-get="/home" hx-swap="innerHTML transition:true" hx-target="#display-container"><span style="font-size: 20px;">&#8630;</span> Voltar</button>
-    <button class="side-button" type="submit" form="checkbox-form"><span style="font-size: 20px;">&#8623;</span> Enviar seleção</button>
+    <button class="side-button" type="submit" form="repo-selection-form"><span style="font-size: 20px;">&#8623;</span> Enviar seleção</button>
 </div>
 <script>
-     function toggleCheckbox(event) {
+    let selectedRoutes = [];
+
+     function toggleCheckbox(event, routeId) {
         const input = event.target;
         const customCheckbox = input.parentElement;
         customCheckbox.classList.toggle('checked');
-        input.checked = !input.checked;
+        if (input.checked) {
+            selectedRoutes.push(routeId);
+        } else {
+            selectedRoutes = selectedRoutes.filter(id => id !== routeId);
+        }
+        document.getElementById('selected_routes').value = JSON.stringify(selectedRoutes);
     }
 </script>

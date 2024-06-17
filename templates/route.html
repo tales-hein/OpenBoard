@@ -1,0 +1,71 @@
+<div id="success-modal" class="modal-route">
+    <div class="route-content">
+        <h2>Rota:</h2>
+        <div id="set-plane">
+        </div>
+            <br>
+            <br>
+            <div>
+                <p><span style="font-weight: bold;">&#8600; Nome:</span> {{ route.name }}</p>
+            </div>
+            <div>
+                <p id="grade"><span style="font-weight: bold;">&#8600; Grau:</span> {{ route.grade }}</p>
+            </div>
+            <div>
+                <p><span style="font-weight: bold;">&#8600; Autor:</span> {{ route.author }}</p>
+            </div>
+            <div>
+                <p><span style="font-weight: bold;">&#8600; Descrição:</span> {{ route.description }}</p>
+            </div>
+            <input type="hidden" id="route-definition" value="{{ route.route_definition }}">
+            <br>
+            <br>
+            <button onclick="hideModal()" class="side-button" style="margin-left: 75%;"><span style="font-size: 20px;">⨯</span> Fechar</button>
+    </div>
+</div>
+
+<script>
+    function scrollToElement() {
+        let element = document.getElementById(elementId);
+        if (element) {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }
+    function createDotMatrix(rows, columns, spacing) {
+        let holds = [];
+        const routeDefinitionHidden = document.getElementById('route-definition');
+        const routeDefinition = JSON.parse(routeDefinitionHidden.value);
+        const plane = document.getElementById('set-plane');
+        const offsetX = 50;
+        const offsetY = 50;
+        let i = 0;
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < columns; col++) {
+                const dot = document.createElement('div');
+                dot.setAttribute('id', `false-${i}`);
+                dot.className = 'dot';
+                dot.style.left = `${offsetX + col * spacing}px`;
+                dot.style.top = `${offsetY + row * spacing}px`;
+                plane.appendChild(dot);
+                if (routeDefinition.includes(i)) {
+                    dot.classList.toggle('normal-hold');
+                }
+                i++;
+            }
+        }
+    }
+    function showModal() {
+        let modal = document.getElementById('success-modal');
+        modal.style.display = "block";
+        scrollToElement('grade');
+    }
+    function hideModal() {
+        let modal = document.getElementById('success-modal');
+        modal.style.display = "none";        
+    }
+    createDotMatrix(16, 11, 45);
+    showModal();
+</script>
