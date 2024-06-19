@@ -107,12 +107,12 @@ def create():
     return render_template('create.html')
 
 @app.route('/success', methods=['GET'])
-def success():
-    return render_template('success.html')
+def success(data):
+    return render_template('success.html', data=data)
 
 @app.route('/error', methods=['GET'])
-def error():
-    return render_template('error.html')
+def error(data):
+    return render_template('error.html', data=data)
 
 @app.route('/show-route/<int:id>', methods=['GET'])
 def show_route(id):
@@ -166,7 +166,11 @@ def create_route():
         )
         db.session.add(new_route)
         db.session.commit()
-        return success()
+        return success(
+                'Legal! A sua rota foi cadastrada com sucesso &#127881;',
+                'Logo a página ficará disponível para outro cadastro, caso queira cadastrar outra rota',
+                '/create',
+            )
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'Erro ao salvar nova rota.', 'error': str(e)}), 404
@@ -215,22 +219,35 @@ def delete_route(id):
 
 @app.route('/api/v1/route/create-selection', methods=['POST'])
 def create_selection():
-    selected_routes = request.form.get('selected_routes')
-    if selected_routes: 
-        selected_routes = json.loads(selected_routes)
+    selected_routes = json.loads(request.form.get('selected_routes'))
+    print(selected_routes)
+    if selected_routes:
         try:
+            code = generate_random_number()
             new_selection = RouteSelection(
-                code=generate_random_number(),
+                code=code,
                 selection=','.join(selected_routes)
             )
             db.session.add(new_selection)
             db.session.commit()
-            return success()
+            return success({
+                'title':'A sua seleção de rotas foi cadastrada com sucesso',
+                'message':'Use esse código enquanto estiver conectado com o controlador da parede para para então carregá-la no seu OpenBoard!',
+                'redirect':'/repo',
+                'code':code,
+            })
         except Exception as e:
             db.session.rollback()
-            return error()
+            print(e)
+            return error({
+                'title':'Oh não! Houve um erro e a sua seleção não foi registrada ',
+                'message':'Logo a página ficará disponível para uma nova tentativa',
+            })  
     else:
-        return error()        
+        return error({
+            'title':'Oh não! Houve um erro e a sua seleção não foi registrada ',
+            'message':'Logo a página ficará disponível para uma nova tentativa',
+        })       
 
 @app.route('/api/v1/route/retrieve-selection', methods=['GET'])
 @require_api_key

@@ -1,9 +1,10 @@
 <div id="success-modal" class="modal">
     <div class="modal-content">
-        <h2 id="success" hx-get="/create" hx-trigger="click" hx-swap="innerHTML transition:true" hx-target="#display-container">
-            Legal! A sua rota foi cadastrada com sucesso &#127881;
+        <h2 id="success" hx-get="{{ data.redirect }}" hx-trigger="click" hx-swap="innerHTML transition:true" hx-target="#display-container">
+            {{ data.title }} &#127881;
         </h2>
-        <p>Logo a página ficará disponível para outro <br> cadastro, caso queira cadastrar outra rota</p>
+        <p>{{ data.message }}</p>
+        <h4 style="font-weight: bold; font-size: 26px; color:black;">{{ data.code }}</h4>
     </div>
 </div>
 <script>
@@ -13,7 +14,7 @@
         setTimeout(function() {
             modal.style.display = "none";
             document.getElementById('success').click();
-        }, 4000);
+        }, 10000);
     }
     showModal();
 </script>

@@ -15,7 +15,7 @@
 <h2>Rotas cadastradas pela comunidade:</h2>
 <br>
 <br>
-<form id="repo-selection-form" hx-post="/api/v1/route/create-selection">
+<form id="repo-selection-form" hx-post="/api/v1/route/create-selection" hx-target="#route-modal">
     {% for route in routes %}
     <div class="button-container">
         <button class="button-route-ref" hx-get="/show-route/{{ route.id }}" hx-swap="innerHTML transition:true" hx-target="#route-modal">
@@ -28,7 +28,7 @@
     {% endfor %}
     <input type="hidden" name="selected_routes" id="selected_routes">
 </form>
-<div id="route-modal">
+<div hx-swap="innerHTML transition:true" id="route-modal">
 </div>
 <div class="side-button-container">
     <button class="side-button" hx-get="/home" hx-swap="innerHTML transition:true" hx-target="#display-container"><span style="font-size: 20px;">&#8630;</span> Voltar</button>
@@ -36,8 +36,11 @@
 </div>
 <script>
     let selectedRoutes = [];
-
-     function toggleCheckbox(event, routeId) {
+    function zeroSelection() {
+        selectedRoutes = [];
+        document.getElementById('selected_routes').value = JSON.stringify(selectedRoutes);
+    }
+    function toggleCheckbox(event, routeId) {
         const input = event.target;
         const customCheckbox = input.parentElement;
         customCheckbox.classList.toggle('checked');
@@ -48,4 +51,9 @@
         }
         document.getElementById('selected_routes').value = JSON.stringify(selectedRoutes);
     }
+    document.body.addEventListener('htmx:afterRequest', (event) => {
+        if (event.detail.successful) {
+            zeroSelection();
+        }
+    });
 </script>
